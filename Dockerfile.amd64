@@ -37,6 +37,7 @@ MAINTAINER Christian Berger "christian.berger@gu.se"
 
 RUN apk update && \
     apk --no-cache add \
+        bash \
         fuse
 
 WORKDIR /usr/bin
