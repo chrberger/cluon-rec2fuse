@@ -1,6 +1,6 @@
 // This is an auto-generated header-only single-file distribution of libcluon.
-// Date: Mon, 09 Apr 2018 19:47:57 +0200
-// Version: 0.0.68
+// Date: Tue, 10 Apr 2018 21:42:45 +0200
+// Version: 0.0.70
 //
 //
 // Implementation of N4562 std::experimental::any (merged into C++17) for C++11 compilers.
@@ -6296,6 +6296,7 @@ class LIBCLUON_API ToJSONVisitor {
 //#include "cluon/cluon.hpp"
 
 #include <cstdint>
+#include <map>
 #include <sstream>
 #include <string>
 
@@ -6332,8 +6333,11 @@ class LIBCLUON_API ToCSVVisitor {
      * @param delimiter Delimiter character.
      * @param withHeader If true, the first line in the output contains the
      *        column headers.
+     * @param mask Map describing which fields to render. If empty, all
+     *             fields will be emitted; individual field identifiers
+     *             can be masked setting them to false.
      */
-    ToCSVVisitor(char delimiter = ';', bool withHeader = true) noexcept;
+    ToCSVVisitor(char delimiter = ';', bool withHeader = true, const std::map<uint32_t, bool> &mask = {}) noexcept;
 
    protected:
     /**
@@ -6394,6 +6398,7 @@ class LIBCLUON_API ToCSVVisitor {
     }
 
    private:
+    std::map<uint32_t, bool> m_mask{};
     std::string m_prefix{};
     char m_delimiter{';'};
     bool m_withHeader{true};
@@ -11462,8 +11467,12 @@ inline std::string ToJSONVisitor::encodeBase64(const std::string &input) const n
 
 namespace cluon {
 
-inline ToCSVVisitor::ToCSVVisitor(char delimiter, bool withHeader) noexcept
-    : ToCSVVisitor::ToCSVVisitor("", delimiter, withHeader, false) {}
+inline ToCSVVisitor::ToCSVVisitor(char delimiter, bool withHeader, const std::map<uint32_t, bool> &mask) noexcept
+    : m_mask(mask)
+    , m_prefix("")
+    , m_delimiter(delimiter)
+    , m_withHeader(withHeader)
+    , m_isNested(false) {}
 
 inline ToCSVVisitor::ToCSVVisitor(const std::string &prefix, char delimiter, bool withHeader, bool isNested) noexcept
     : m_prefix(prefix)
@@ -11502,120 +11511,133 @@ inline void ToCSVVisitor::postVisit() noexcept {
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, bool &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << v << m_delimiter;
     }
-    m_bufferValues << v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, char &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << v << m_delimiter;
     }
-    m_bufferValues << v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, int8_t &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << +v << m_delimiter;
     }
-    m_bufferValues << +v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, uint8_t &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << +v << m_delimiter;
     }
-    m_bufferValues << +v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, int16_t &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << v << m_delimiter;
     }
-    m_bufferValues << v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, uint16_t &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << v << m_delimiter;
     }
-    m_bufferValues << v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, int32_t &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << v << m_delimiter;
     }
-    m_bufferValues << v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, uint32_t &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << v << m_delimiter;
     }
-    m_bufferValues << v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, int64_t &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << v << m_delimiter;
     }
-    m_bufferValues << v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, uint64_t &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << v << m_delimiter;
     }
-    m_bufferValues << v << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, float &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << std::setprecision(7) << v << std::setprecision(6) << m_delimiter;
     }
-    m_bufferValues << std::setprecision(7) << v << std::setprecision(6) << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, double &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << std::setprecision(11) << v << std::setprecision(6) << m_delimiter;
     }
-    m_bufferValues << std::setprecision(11) << v << std::setprecision(6) << m_delimiter;
 }
 
 inline void ToCSVVisitor::visit(uint32_t id, std::string &&typeName, std::string &&name, std::string &v) noexcept {
-    (void)id;
     (void)typeName;
-    if (m_fillHeader) {
-        m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+    if ((0 == m_mask.count(id)) || m_mask[id]) {
+        if (m_fillHeader) {
+            m_bufferHeader << m_prefix << (!m_prefix.empty() ? "." : "") << name << m_delimiter;
+        }
+        m_bufferValues << '\"' << v << '\"' << m_delimiter;
     }
-    m_bufferValues << '\"' << v << '\"' << m_delimiter;
 }
 
 } // namespace cluon
@@ -14871,12 +14893,16 @@ int main(int argc, char **argv) {
     const std::string PROGRAM{argv[0]}; // NOLINT
     auto commandlineArguments = cluon::getCommandlineArguments(argc, argv);
     if (1 == argc) {
-        std::cerr << PROGRAM << " replays a .rec file into an OpenDaVINCI session or to stdout." << std::endl;
-        std::cerr << "Usage:   " << PROGRAM << " [--cid=<OpenDaVINCI session>] recording.rec" << std::endl;
+        std::cerr << PROGRAM << " replays a .rec file into an OpenDaVINCI session or to stdout; if playing back to an OD4Session using parameter --cid, you can specify the optional parameter --stdout to also playback to stdout." << std::endl;
+        std::cerr << "Usage:   " << PROGRAM << " [--cid=<OpenDaVINCI session> [--stdout]] recording.rec" << std::endl;
         std::cerr << "Example: " << PROGRAM << " --cid=111 file.rec" << std::endl;
+        std::cerr << "         " << PROGRAM << " --cid=111 --stdout file.rec" << std::endl;
+        std::cerr << "         " << PROGRAM << " file.rec" << std::endl;
         retCode = 1;
     }
     else {
+        const bool playBackToStdout = ( (0 != commandlineArguments.count("stdout")) || (0 == commandlineArguments.count("cid")) );
+
         std::string recFile;
         for (auto e : commandlineArguments) {
             if (recFile.empty() && e.second.empty() && e.first != PROGRAM) {
@@ -15027,7 +15053,7 @@ int main(int argc, char **argv) {
                         if (od4 && od4->isRunning()) {
                             od4->send(std::move(next.second));
                         }
-                        else {
+                        if (playBackToStdout) {
                             std::cout << cluon::serializeEnvelope(std::move(next.second));
                             std::cout.flush();
                         }

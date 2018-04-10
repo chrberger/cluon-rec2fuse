@@ -16,11 +16,11 @@
  */
 
 #include "cluon-complete.hpp"
-#include "opendlv-standard-message-set.hpp"
 
 #define FUSE_USE_VERSION 26
 #include <fuse.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <map>
@@ -170,14 +170,34 @@ int32_t main(int32_t argc, char **argv) {
 
                         mapOfFilenames[KEY] = _FILENAME;
                         if (mapOfEntries.count(KEY) > 0) {
+                            // Extract timestamps.
+                            std::string timeStamps;
+                            {
+                                cluon::ToCSVVisitor csv(';', false, { {1,false}, {2,false}, {3,true}, {4,true}, {5,true}, {6,false} });
+                                env.accept(csv);
+                                timeStamps = csv.csv();
+                            }
+
                             cluon::ToCSVVisitor csv(';', false);
                             gm.accept(csv);
-                            mapOfEntries[KEY] +=  csv.csv();
+                            mapOfEntries[KEY] += stringtoolbox::split(timeStamps, '\n')[0] + csv.csv();
                         }
                         else {
+                            // Extract timestamps.
+                            std::vector<std::string> timeStampsWithHeader;
+                            {
+                                // Skip senderStamp (as it is in file name) and serialzedData.
+                                cluon::ToCSVVisitor csv(';', true, { {1,false}, {2,false}, {3,true}, {4,true}, {5,true}, {6,false} });
+                                env.accept(csv);
+                                timeStampsWithHeader = stringtoolbox::split(csv.csv(), '\n');
+                            }
+
                             cluon::ToCSVVisitor csv(';', true);
                             gm.accept(csv);
-                            mapOfEntries[KEY] +=  csv.csv();
+
+                            std::vector<std::string> valuesWithHeader = stringtoolbox::split(csv.csv(), '\n');
+
+                            mapOfEntries[KEY] += timeStampsWithHeader.at(0) + valuesWithHeader.at(0) + '\n' + timeStampsWithHeader.at(1) + valuesWithHeader.at(1) + '\n';
                         }
                         mapOfEntrySizes[KEY] = mapOfEntries[KEY].size();
                     }
