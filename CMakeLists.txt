@@ -19,7 +19,7 @@ project(cluon-rec2fuse)
 
 ################################################################################
 # Defining libcluon.
-set(CLUON_COMPLETE cluon-complete-v0.0.70.hpp)
+set(CLUON_COMPLETE cluon-complete-v0.0.89.hpp)
 
 ################################################################################
 # This project requires C++14 or newer.
