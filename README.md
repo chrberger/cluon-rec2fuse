@@ -42,7 +42,7 @@ docker run --rm -ti -v $PWD/myrecording.rec:/opt/input.rec \
                     --device=/dev/fuse \
                     -v /etc/passwd:/etc/passwd:ro \
                     -v /etc/group:/etc/group \
-                    chrberger/cluon-rec2fuse-amd64:v0.0.89 \
+                    chrberger/cluon-rec2fuse-amd64:v0.0.90 \
                     /bin/sh -c "chown $UID:$UID /opt/output && \
                     su -s /bin/sh $USER -c 'cluon-rec2fuse --rec=/opt/input.rec --odvd=/opt/odvd -f /opt/output' \
                     && tail -f /dev/null"
